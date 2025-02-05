@@ -7,4 +7,3 @@ Console.Write("$ ");
 Console.ReadLine();
 
 Console.Write("invalid_command: command not found");
-Console.Write("$ ");
