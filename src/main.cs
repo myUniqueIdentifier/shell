@@ -21,7 +21,7 @@ while (true)
   else if (line.StartsWith("echo"))
   {
     var arguments = line.Split(' ').Skip(1).ToArray();
-    Console.WriteLine(string.Join("", arguments));
+    Console.WriteLine(string.Join(" ", arguments));
   }
   else
   {
