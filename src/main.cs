@@ -18,6 +18,11 @@ while (true)
     var arguments = line.Split(' ');
     Environment.Exit(int.Parse(arguments[1]));
   }
+  else if (line.StartsWith("echo"))
+  {
+    var arguments = line.Split(' ').Skip(1).ToArray();
+    Console.WriteLine(string.Join("", arguments));
+  }
   else
   {
     Console.WriteLine($"{line}: command not found");
