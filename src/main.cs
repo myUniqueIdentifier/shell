@@ -3,14 +3,17 @@ using System.Net.Sockets;
 
 Console.Write("$ ");
 
-// Wait for user input
-var x = Console.ReadLine();
+while (true)
+{
+  // Wait for user input
+  var line = Console.ReadLine();
 
-if (string.IsNullOrWhiteSpace(x))
-{
-  Console.Write("$ ");
-}
-else
-{
-  Console.Write($"{x}: command not found");
+  if (string.IsNullOrWhiteSpace(line))
+  {
+    Console.Write("$ ");
+  }
+  else
+  {
+    Console.Write($"{line}: command not found");
+  }
 }
