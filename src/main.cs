@@ -6,4 +6,11 @@ Console.Write("$ ");
 // Wait for user input
 var x = Console.ReadLine();
 
-Console.Write($"invalid_{x}_command: command not found");
+if (string.IsNullOrWhiteSpace(x))
+{
+  Console.Write("$ ");
+}
+else
+{
+  Console.Write($"invalid_command: command not found");
+}
