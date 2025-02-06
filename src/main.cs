@@ -12,5 +12,5 @@ if (string.IsNullOrWhiteSpace(x))
 }
 else
 {
-  Console.Write($"invalid_command: command not found");
+  Console.Write($"{x}: command not found");
 }
