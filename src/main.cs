@@ -69,7 +69,7 @@ namespace Namespace
       }
       else
       {
-        Console.WriteLine($"{line}: not found");
+        Console.WriteLine($"{argument}: not found");
       }
     }
   }
