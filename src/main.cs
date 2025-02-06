@@ -62,15 +62,46 @@ namespace Namespace
     }
     static void Type(string line)
     {
-      var argument = line.Split(' ')[1];
+      var arguments = line.Split(' ');
+      if (arguments.Count() < 2)
+      {
+        Console.WriteLine($"type argument missing.");
+        return;
+      }
+      var argument = arguments[1];
       if (commands.ContainsKey(argument))
       {
         Console.WriteLine($"{argument} is a shell builtin");
+        return;
+      }
+
+      var  location = GetFullPath(argument);
+      if(location is null)
+      {
+        Console.WriteLine($"{argument} is {location}");
       }
       else
       {
         Console.WriteLine($"{argument}: not found");
       }
+    }
+    static string GetFullPath(string fileName)
+    {
+      if (File.Exists(fileName))
+      {
+        return Path.GetFullPath(fileName);
+      }
+
+      var values = Environment.GetEnvironmentVariable("PATH");
+      foreach (var path in values.Split(Path.PathSeparator))
+      {
+        var fullPath = Path.Combine(path, fileName);
+        if (File.Exists(fullPath))
+        {
+          return fullPath;
+        }
+      }
+      return null;
     }
   }
 }
