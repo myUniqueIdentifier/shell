@@ -9,7 +9,11 @@ while (true)
   // Wait for user input
   var line = Console.ReadLine();
 
-  if (!string.IsNullOrWhiteSpace(line))
+  if (line == null)
+  {
+    Environment.Exit(0);
+  }
+  else if (!string.IsNullOrWhiteSpace(line))
   {
     Console.WriteLine($"{line}: command not found");
   }
