@@ -1,19 +1,16 @@
 using System.Net;
 using System.Net.Sockets;
 
-Console.Write("$ ");
 
 while (true)
 {
+  Console.Write("$ ");
+
   // Wait for user input
   var line = Console.ReadLine();
 
-  if (string.IsNullOrWhiteSpace(line))
+  if (!string.IsNullOrWhiteSpace(line))
   {
-    Console.Write("$ ");
-  }
-  else
-  {
-    Console.Write($"{line}: command not found");
+    Console.WriteLine($"{line}: command not found");
   }
 }
