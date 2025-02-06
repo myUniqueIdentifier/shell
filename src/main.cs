@@ -13,12 +13,13 @@ while (true)
   {
     Environment.Exit(0);
   }
-  else if (!string.IsNullOrWhiteSpace(line))
+  else if (line.StartsWith("exit"))
+  {
+    var arguments = line.Split(' ');
+    Environment.Exit(int.Parse(arguments[1]));
+  }
+  else
   {
     Console.WriteLine($"{line}: command not found");
-  }
-  else if (line.Contains("exit 0"))
-  {
-    Environment.Exit(0);
   }
 }
