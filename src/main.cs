@@ -76,7 +76,7 @@ namespace Namespace
       }
 
       var  location = GetFullPath(argument);
-      if(location is null)
+      if(location is not null)
       {
         Console.WriteLine($"{argument} is {location}");
       }
