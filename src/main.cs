@@ -13,4 +13,8 @@ while (true)
   {
     Console.WriteLine($"{line}: command not found");
   }
+  else if (line.Contains("exit 0"))
+  {
+    Environment.Exit(0);
+  }
 }
