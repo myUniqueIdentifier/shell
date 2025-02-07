@@ -135,7 +135,14 @@ namespace Namespace
     static void Cd(string line)
     {
       var argument = line.Split(' ').Skip(1).ToArray();
-      Directory.SetCurrentDirectory(string.Join(" ", argument));
+      try
+      {
+        Directory.SetCurrentDirectory(string.Join(" ", argument));
+      }
+      catch
+      {
+        Console.WriteLine($"{string.Join(" ", argument)}:  No such file or directory");
+      }
     }
   }
 }
