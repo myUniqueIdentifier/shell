@@ -12,7 +12,8 @@ namespace Namespace
       { "exit", Exit },
       { "echo", Echo },
       { "type", Type },
-      { "pwd", Pwd }
+      { "pwd", Pwd },
+      { "cd", Cd }
     };
 
     // ----------------------------------------------------------------------------------------
@@ -129,6 +130,12 @@ namespace Namespace
     static void Pwd(string line)
     {
       Console.WriteLine (Directory.GetCurrentDirectory());
+    }
+    // ----------------------------------------------------------------------------------------
+    static void Cd(string line)
+    {
+      var argument = line.Split(' ').Skip(1).ToArray();
+      Directory.SetCurrentDirectory(string.Join(" ", argument));
     }
   }
 }
