@@ -141,7 +141,7 @@ namespace Namespace
       }
       catch
       {
-        Console.WriteLine($"{string.Join(" ", argument)}:  No such file or directory");
+        Console.WriteLine($"cd: {string.Join(" ", argument)}:  No such file or directory");
       }
     }
   }
