@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -135,13 +136,21 @@ namespace Namespace
     static void Cd(string line)
     {
       var argument = line.Split(' ').Skip(1).ToArray();
-      try
+      if (argument[0] == "~")
       {
-        Directory.SetCurrentDirectory(string.Join(" ", argument));
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        Directory.SetCurrentDirectory(home);
       }
-      catch
+      else
       {
-        Console.WriteLine($"cd: {string.Join(" ", argument)}: No such file or directory");
+        try
+        {
+          Directory.SetCurrentDirectory(string.Join(" ", argument));
+        }
+        catch
+        {
+          Console.WriteLine($"cd: {string.Join(" ", argument)}: No such file or directory");
+        }
       }
     }
   }
