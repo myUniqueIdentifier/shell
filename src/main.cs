@@ -11,14 +11,13 @@ namespace Namespace
     {
       { "exit", Exit },
       { "echo", Echo },
-      { "type", Type }
+      { "type", Type },
+      { "pwd", Pwd }
     };
 
     // ----------------------------------------------------------------------------------------
     static void Main(string[] args)
     {
-
-
       while (true)
       {
         Console.Write("$ ");
@@ -104,7 +103,7 @@ namespace Namespace
       return GetFullPath(fileName) != null;
     }
     // ----------------------------------------------------------------------------------------
-    static string GetFullPath(string fileName)
+    static string? GetFullPath(string fileName)
     {
       if (File.Exists(fileName))
       {
@@ -125,6 +124,11 @@ namespace Namespace
         }
       }
       return null;
+    }
+    // ----------------------------------------------------------------------------------------
+    static void Pwd(string line)
+    {
+      Console.WriteLine (Directory.GetCurrentDirectory());
     }
   }
 }
