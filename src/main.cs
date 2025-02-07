@@ -48,7 +48,7 @@ namespace Namespace
           }
           else
           {
-            Console.WriteLine($"invalid_command: command not found");
+            Console.WriteLine($"{current}: command not found");
           }
         }
       }
