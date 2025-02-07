@@ -30,15 +30,19 @@ namespace Namespace
         }
         else
         {
-          try
+          var current = line.Split(' ')[0];
+          if (commands.ContainsKey(current))// internal commands
           {
-            var current = line.Split(' ')[0];
             var handler = commands[current];
             handler(line);
           }
-          catch
+          else if (Exists(current))
           {
-            Console.WriteLine($"{line}: command not found");
+            System.Diagnostics.Process.Start(line);
+          }
+          else
+          {
+            Console.WriteLine($"XXXX");
           }
         }
       }
@@ -84,6 +88,10 @@ namespace Namespace
       {
         Console.WriteLine($"{argument}: not found");
       }
+    }
+    static bool Exists(string fileName)
+    {
+      return GetFullPath(fileName) != null;
     }
     static string GetFullPath(string fileName)
     {
