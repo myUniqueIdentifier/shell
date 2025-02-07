@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Namespace
 {
@@ -13,6 +14,7 @@ namespace Namespace
       { "type", Type }
     };
 
+    // ----------------------------------------------------------------------------------------
     static void Main(string[] args)
     {
 
@@ -38,15 +40,20 @@ namespace Namespace
           }
           else if (Exists(current))
           {
-            System.Diagnostics.Process.Start(line);
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = current;
+            var arguments = line.Split(' ').Skip(1).ToArray();
+            startInfo.Arguments = string.Join(" ", arguments);
+            Process.Start(startInfo);
           }
           else
           {
-            Console.WriteLine($"XXXX");
+            Console.WriteLine($"invalid_command: command not found");
           }
         }
       }
     }
+    // ----------------------------------------------------------------------------------------
     static void Exit(string line)
     {
       var arguments = line.Split(' ');
@@ -59,11 +66,13 @@ namespace Namespace
         Console.WriteLine($"exit argument not integer.");
       }
     }
+    // ----------------------------------------------------------------------------------------
     static void Echo(string line)
     {
       var arguments = line.Split(' ').Skip(1).ToArray();
       Console.WriteLine(string.Join(" ", arguments));
     }
+    // ----------------------------------------------------------------------------------------
     static void Type(string line)
     {
       var arguments = line.Split(' ');
@@ -89,10 +98,12 @@ namespace Namespace
         Console.WriteLine($"{argument}: not found");
       }
     }
+    // ----------------------------------------------------------------------------------------
     static bool Exists(string fileName)
     {
       return GetFullPath(fileName) != null;
     }
+    // ----------------------------------------------------------------------------------------
     static string GetFullPath(string fileName)
     {
       if (File.Exists(fileName))
@@ -101,6 +112,10 @@ namespace Namespace
       }
 
       var values = Environment.GetEnvironmentVariable("PATH");
+      if ( values is null)
+      {
+        return null;
+      }
       foreach (var path in values.Split(Path.PathSeparator))
       {
         var fullPath = Path.Combine(path, fileName);
