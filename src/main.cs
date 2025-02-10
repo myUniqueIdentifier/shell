@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Namespace
 {
@@ -71,17 +72,17 @@ namespace Namespace
     static void Echo(string line)
     {
       var text = line.Remove(0, 5);
-      if ((text.First() == '\'') && (text.Last() == '\''))
-      {
-        text = text.Trim('\'');
-      }
-      else
-      {
-        text = string.Join(' ', line.Split(' ').Skip(1).ToArray());
-        text = string.Join(' ', text.Split().Where(x => x != ""));
-      }
+      string pattern = @"'([^']*)'|\S+";
 
-      Console.WriteLine(text);
+      MatchCollection matches = Regex.Matches(text, pattern);
+
+      foreach (Match match in matches)
+      {
+        var output = match.Groups[1].Success ? match.Groups[1].Value : match.Value;
+        Console.Write(output);
+        Console.Write(" ");
+      }
+      Console.WriteLine("");
     }
     // ----------------------------------------------------------------------------------------
     static void Type(string line)
