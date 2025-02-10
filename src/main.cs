@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -35,7 +34,7 @@ namespace Namespace
         else
         {
           var current = line.Split(' ')[0];
-          if (commands.ContainsKey(current))// internal commands
+          if (commands.ContainsKey(current)) // internal commands
           {
             var handler = commands[current];
             handler(line);
@@ -76,13 +75,24 @@ namespace Namespace
 
       MatchCollection matches = Regex.Matches(text, pattern);
 
+      string output = "";
       foreach (Match match in matches)
       {
-        var output = match.Groups[1].Success ? match.Groups[1].Value : match.Value;
-        Console.Write(output);
-        Console.Write(" ");
+        string value = match.Groups[1].Success ? match.Groups[1].Value : match.Value;
+
+        if (output.Length > 0 && !char.IsWhiteSpace(output[^1]) && !value.StartsWith(" "))
+        {
+          output += ""; // Voeg niks by as daar geen spasie is nie
+        }
+        else
+        {
+          output += " ";
+        }
+
+        output += value;
       }
-      Console.WriteLine("");
+
+      Console.WriteLine(output.Trim());
     }
     // ----------------------------------------------------------------------------------------
     static void Type(string line)
