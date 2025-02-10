@@ -78,6 +78,7 @@ namespace Namespace
       else
       {
         text = string.Join(' ', line.Split(' ').Skip(1).ToArray());
+        text = string.Join(' ', text.Split().Where(x => x != ""));
       }
 
       Console.WriteLine(text);
