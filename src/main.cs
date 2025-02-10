@@ -75,6 +75,10 @@ namespace Namespace
       {
         text = text.Trim('\'');
       }
+      else
+      {
+        text = string.Join(' ', line.Split(' ').Skip(1).ToArray());
+      }
 
       Console.WriteLine(text);
     }
@@ -132,12 +136,16 @@ namespace Namespace
       }
       return null;
     }
+
     // ----------------------------------------------------------------------------------------
+    // Print Working Directory
     static void Pwd(string line)
     {
       Console.WriteLine (Directory.GetCurrentDirectory());
     }
+
     // ----------------------------------------------------------------------------------------
+    // Change Directory
     static void Cd(string line)
     {
       var argument = line.Split(' ').Skip(1).ToArray();
