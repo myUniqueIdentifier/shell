@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Namespace
 {
-  class Program
+  static class Program
   {
     public delegate void Command(string line);
 
@@ -70,8 +70,13 @@ namespace Namespace
     // ----------------------------------------------------------------------------------------
     static void Echo(string line)
     {
-      var arguments = line.Split(' ').Skip(1).ToArray();
-      Console.WriteLine(string.Join(" ", arguments));
+      var text = line.Remove(0, 5);
+      if ((text.First() == '\'') && (text.Last() == '\''))
+      {
+        text = text.Trim('\'');
+      }
+
+      Console.WriteLine(text);
     }
     // ----------------------------------------------------------------------------------------
     static void Type(string line)
