@@ -56,6 +56,7 @@ namespace Namespace
         }
       }
     }
+
     // ----------------------------------------------------------------------------------------
     static void Exit(string [] arguments)
     {
@@ -158,9 +159,10 @@ namespace Namespace
     static string[] ParseInput(string input)
     {
       ArgumentNullException.ThrowIfNull(input);
-      var regex = new Regex(@"'([^']*)'|(\S+)");
+      var regex = new Regex(@"'(\S*)'|(\S+)");
       var matches = regex.Matches(input);
-      return matches.Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value).ToArray();
+      var arguments = matches.Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value).ToArray();
+      return arguments.Select(word => word.Replace("''", "")).ToArray();
     }
   }
 }
