@@ -47,7 +47,7 @@ namespace Namespace
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = command;
             startInfo.Arguments = string.Join(" ", arguments);
-            Process.Start(startInfo);
+            Process.Start(startInfo)?.WaitForExit();
           }
           else
           {
@@ -119,7 +119,7 @@ namespace Namespace
       }
       foreach (var path in values.Split(Path.PathSeparator))
       {
-        var fullPath = Path.Combine(path, fileName);
+        var fullPath = Path.Combine(path, fileName) + ".exe";
         if (File.Exists(fullPath))
         {
           return fullPath;
