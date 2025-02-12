@@ -6,7 +6,7 @@ namespace Namespace
 {
   static class Program
   {
-    public delegate void Command(string line);
+    public delegate void Command(string [] arguments);
 
     static readonly Dictionary<string, Command> commands = new Dictionary<string, Command>()
     {
@@ -33,34 +33,35 @@ namespace Namespace
         }
         else
         {
-          var current = line.Split(' ')[0];
-          if (commands.ContainsKey(current)) // internal commands
+          var temp = ParseInput(line);
+          var arguments = temp.Skip(1).ToArray();
+          var command = temp[0];
+
+          if (commands.ContainsKey(command)) // internal commands
           {
-            var handler = commands[current];
-            handler(line);
+            var handler = commands[command];
+            handler(arguments);
           }
-          else if (Exists(current))
+          else if (Exists(command))
           {
             ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = current;
-            var arguments = line.Split(' ').Skip(1).ToArray();
+            startInfo.FileName = command;
             startInfo.Arguments = string.Join(" ", arguments);
             Process.Start(startInfo);
           }
           else
           {
-            Console.WriteLine($"{current}: command not found");
+            Console.WriteLine($"{command}: command not found");
           }
         }
       }
     }
     // ----------------------------------------------------------------------------------------
-    static void Exit(string line)
+    static void Exit(string [] arguments)
     {
-      var arguments = line.Split(' ');
       try
       {
-        Environment.Exit(int.Parse(arguments[1]));
+        Environment.Exit(int.Parse(arguments.First()));
       }
       catch
       {
@@ -68,30 +69,19 @@ namespace Namespace
       }
     }
     // ----------------------------------------------------------------------------------------
-    static void Echo(string line)
+    static void Echo(string[] arguments)
     {
-      var text = line.Remove(0, 5);
-      string pattern = @"(\b\w+\b)|'([^']+)'";
-
-      MatchCollection matches = Regex.Matches(text, pattern);
-      string output = "";
-      foreach (Match match in matches)
-      {
-        string word = match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value;
-        output += " " + word;
-      }
-      Console.WriteLine(output.TrimStart());
+      Console.WriteLine(string.Join(" ", arguments));
     }
     // ----------------------------------------------------------------------------------------
-    static void Type(string line)
+    static void Type(string[] arguments)
     {
-      var arguments = line.Split(' ');
-      if (arguments.Count() < 2)
+      if (arguments.Count() < 1)
       {
         Console.WriteLine($"type argument missing.");
         return;
       }
-      var argument = arguments[1];
+      var argument = arguments.First();
       if (commands.ContainsKey(argument))
       {
         Console.WriteLine($"{argument} is a shell builtin");
@@ -139,17 +129,16 @@ namespace Namespace
 
     // ----------------------------------------------------------------------------------------
     // Print Working Directory
-    static void Pwd(string line)
+    static void Pwd(string[] arguments)
     {
       Console.WriteLine (Directory.GetCurrentDirectory());
     }
 
     // ----------------------------------------------------------------------------------------
     // Change Directory
-    static void Cd(string line)
+    static void Cd(string[] arguments)
     {
-      var argument = line.Split(' ').Skip(1).ToArray();
-      if (argument[0] == "~")
+      if (arguments[0] == "~")
       {
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         Directory.SetCurrentDirectory(home);
@@ -158,13 +147,20 @@ namespace Namespace
       {
         try
         {
-          Directory.SetCurrentDirectory(string.Join(" ", argument));
+          Directory.SetCurrentDirectory(string.Join(" ", arguments));
         }
         catch
         {
-          Console.WriteLine($"cd: {string.Join(" ", argument)}: No such file or directory");
+          Console.WriteLine($"cd: {string.Join(" ", arguments)}: No such file or directory");
         }
       }
+    }
+    static string[] ParseInput(string input)
+    {
+      ArgumentNullException.ThrowIfNull(input);
+      var regex = new Regex(@"'([^']*)'|(\S+)");
+      var matches = regex.Matches(input);
+      return matches.Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value).ToArray();
     }
   }
 }
