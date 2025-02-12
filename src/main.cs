@@ -71,28 +71,16 @@ namespace Namespace
     static void Echo(string line)
     {
       var text = line.Remove(0, 5);
-      string pattern = @"'([^']*)'|\S+";
+      string pattern = @"(\b\w+\b)|'([^']+)'";
 
       MatchCollection matches = Regex.Matches(text, pattern);
-
       string output = "";
       foreach (Match match in matches)
       {
-        string value = match.Groups[1].Success ? match.Groups[1].Value : match.Value;
-
-        if (output.Length > 0 && !char.IsWhiteSpace(output[^1]) && !value.StartsWith(" "))
-        {
-          output += ""; // Voeg niks by as daar geen spasie is nie
-        }
-        else
-        {
-          output += " ";
-        }
-
-        output += value;
+        string word = match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value;
+        output += " " + word;
       }
-
-      Console.WriteLine(output.Trim());
+      Console.WriteLine(output.TrimStart());
     }
     // ----------------------------------------------------------------------------------------
     static void Type(string line)
