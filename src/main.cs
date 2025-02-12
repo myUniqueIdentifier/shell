@@ -159,7 +159,7 @@ namespace Namespace
     static string[] ParseInput(string input)
     {
       ArgumentNullException.ThrowIfNull(input);
-      var regex = new Regex(@"'(\S*)'|(\S+)");
+      var regex = new Regex(@"'([^']*(?:''[^']*)*)'|(\S+)");
       var matches = regex.Matches(input);
       var arguments = matches.Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value).ToArray();
       return arguments.Select(word => word.Replace("''", "")).ToArray();
