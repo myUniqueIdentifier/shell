@@ -1,8 +1,8 @@
+using Microsoft.VisualBasic;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Namespace
 {
@@ -46,9 +46,11 @@ namespace Namespace
           }
           else if (Exists(command))
           {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = command;
-            startInfo.Arguments = string.Join(" ", arguments);
+            var startInfo = new ProcessStartInfo
+            {
+              FileName = command,
+              Arguments = string.Join(" ", arguments.Select(s => s.Contains(' ') ? $"'{s}'" : s))
+            };
             Process.Start(startInfo)?.WaitForExit();
           }
           else
