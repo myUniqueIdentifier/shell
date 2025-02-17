@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Namespace
 {
@@ -119,7 +121,12 @@ namespace Namespace
       }
       foreach (var path in values.Split(Path.PathSeparator))
       {
-        var fullPath = Path.Combine(path, fileName) + ".exe";
+        var fullPath = Path.Combine(path, fileName);
+        var extention = fileName.Substring(Math.Max(0, fileName.Length - 4));
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !extention.Equals(".exe"))
+        {
+          fullPath += ".exe";
+        }
         if (File.Exists(fullPath))
         {
           return fullPath;
