@@ -49,7 +49,7 @@ namespace Namespace
             var startInfo = new ProcessStartInfo
             {
               FileName = command,
-              Arguments = string.Join(" ", arguments.Select(s => s.Contains(' ') ? $"'{s}'" : s))
+              Arguments = string.Join(" ", arguments.Select(s => s.Contains(' ') ? $"\"{s}\"" : s))
             };
             Process.Start(startInfo)?.WaitForExit();
           }
