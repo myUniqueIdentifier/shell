@@ -1,14 +1,14 @@
-using static System.Console;
+using Microsoft.VisualBasic;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace Program
+namespace Namespace
 {
   static class Program
   {
-    public delegate void Command(List<string> arguments);
+    public delegate void Command(string [] arguments);
 
     static readonly Dictionary<string, Command> commands = new Dictionary<string, Command>()
     {
@@ -35,10 +35,9 @@ namespace Program
         }
         else
         {
-          if (!ParseInput(line, out string command, out List<string> arguments))
-          {
-            continue;
-          }
+          var temp = ParseInput(line);
+          var arguments = temp.Skip(1).ToArray();
+          var command = temp[0];
 
           if (commands.ContainsKey(command)) // internal commands
           {
@@ -56,14 +55,14 @@ namespace Program
           }
           else
           {
-            WriteLine($"{command}: command not found");
+            Console.WriteLine($"{command}: command not found");
           }
         }
       }
     }
 
     // ----------------------------------------------------------------------------------------
-    static void Exit(List<string> arguments)
+    static void Exit(string [] arguments)
     {
       try
       {
@@ -71,37 +70,37 @@ namespace Program
       }
       catch
       {
-        WriteLine($"exit argument not integer.");
+        Console.WriteLine($"exit argument not integer.");
       }
     }
     // ----------------------------------------------------------------------------------------
-    static void Echo(List<string> arguments)
+    static void Echo(string[] arguments)
     {
-      WriteLine(string.Join(" ", arguments));
+      Console.WriteLine(string.Join(" ", arguments));
     }
     // ----------------------------------------------------------------------------------------
-    static void Type(List<string> arguments)
+    static void Type(string[] arguments)
     {
       if (arguments.Count() < 1)
       {
-        WriteLine($"type argument missing.");
+        Console.WriteLine($"type argument missing.");
         return;
       }
       var argument = arguments.First();
       if (commands.ContainsKey(argument))
       {
-        WriteLine($"{argument} is a shell builtin");
+        Console.WriteLine($"{argument} is a shell builtin");
         return;
       }
 
       var  location = GetFullPath(argument);
       if(location is not null)
       {
-        WriteLine($"{argument} is {location}");
+        Console.WriteLine($"{argument} is {location}");
       }
       else
       {
-        WriteLine($"{argument}: not found");
+        Console.WriteLine($"{argument}: not found");
       }
     }
     // ----------------------------------------------------------------------------------------
@@ -140,14 +139,14 @@ namespace Program
 
     // ----------------------------------------------------------------------------------------
     // Print Working Directory
-    static void Pwd(List<string> arguments)
+    static void Pwd(string[] arguments)
     {
-      WriteLine (Directory.GetCurrentDirectory());
+      Console.WriteLine (Directory.GetCurrentDirectory());
     }
 
     // ----------------------------------------------------------------------------------------
     // Change Directory
-    static void Cd(List<string> arguments)
+    static void Cd(string[] arguments)
     {
       if (arguments[0] == "~")
       {
@@ -162,82 +161,17 @@ namespace Program
         }
         catch
         {
-          WriteLine($"cd: {string.Join(" ", arguments)}: No such file or directory");
+          Console.WriteLine($"cd: {string.Join(" ", arguments)}: No such file or directory");
         }
       }
     }
-    static string[] ParseInput_(string input)
+    static string[] ParseInput(string input)
     {
       ArgumentNullException.ThrowIfNull(input);
-      var regex = new Regex(@"'([^']*(?:''[^']*)*)'|(\S+)");
+      var regex = new Regex(@"('([^'](?:''[^']))'|""([^""](?:"""")*)""|\'|\""|\S+)");
       var matches = regex.Matches(input);
       var arguments = matches.Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value).ToArray();
       return arguments.Select(word => word.Replace("''", "")).ToArray();
-    }
-    static bool ParseInput(string input, out string command, out List<string> arguments)
-    {
-      string pattern = @"(\S+)";
-      var regex = new Regex(pattern);
-      Match command_result = regex.Match(input);
-      command = command_result.Value;
-      arguments = new List<string>();
-
-      if (command_result.Success)
-      {
-        var command_length = command_result.Length + command_result.Index;
-        var remaining = input.Remove(0, command_length).TrimStart();
-
-        while (!string.IsNullOrEmpty(remaining))
-        {
-          if ((remaining[0] == '\'') && (remaining.AsSpan().Count('\'') > 1))
-          {
-            string single_pattern = @"'((?:[^']| '')*)'";
-            var single_regex = new Regex(single_pattern);
-            var argument = single_regex.Match(remaining);
-            if (argument.Success)
-            {
-              arguments.Add(argument.Groups[1].Value.Replace("''", ""));
-              var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length);
-            }
-            else
-            {
-              break;
-            }
-          }
-          else if ((remaining[0] == '\"') && (remaining.AsSpan().Count('\"') > 1))
-          {
-            string single_pattern = @"""((?:[^""]|"""")*)""";
-            var single_regex = new Regex(single_pattern);
-            var argument = single_regex.Match(remaining);
-            if (argument.Success)
-            {
-              arguments.Add(argument.Groups[1].Value.Replace("\"\"", ""));
-              var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length);
-            }
-            else
-            {
-              break;
-            }
-          }
-          else
-          {
-            var argument = regex.Match(remaining);
-            if (argument.Success)
-            {
-              arguments.Add(argument.Value);
-              var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length);
-            }
-            else
-            {
-              break;
-            }
-          }
-        }
-      }
-      return command_result.Success;
     }
   }
 }

@@ -1,0 +1,15 @@
+(?:'([^']*)'|"([^"]*)"|(\S+))
+
+ene
+bene
+joe blow
+joe 'joe blow'
+joe blow
+tik tok tak 
+tik "tik tok" tak
+asfd        asfd
+dhgf "dhgf  dfgh"
+eytr 'yter yetr'
+pieter 'gert''gert'
+"jan""jan" piet
+"1234" asdf
