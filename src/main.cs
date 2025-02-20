@@ -198,7 +198,7 @@ namespace Program
             {
               arguments.Add(argument.Groups[1].Value.Replace("''", ""));
               var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length);
+              remaining = remaining.Remove(0, argument_length).TrimStart();
             }
             else
             {
@@ -214,7 +214,7 @@ namespace Program
             {
               arguments.Add(argument.Groups[1].Value.Replace("\"\"", ""));
               var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length);
+              remaining = remaining.Remove(0, argument_length).TrimStart();
             }
             else
             {
@@ -228,7 +228,7 @@ namespace Program
             {
               arguments.Add(argument.Value);
               var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length);
+              remaining = remaining.Remove(0, argument_length).TrimStart();
             }
             else
             {
