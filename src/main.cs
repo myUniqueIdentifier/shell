@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.CompilerServices;
 
 namespace Program
 {
@@ -15,8 +16,8 @@ namespace Program
       { "exit", Exit },
       { "echo", Echo },
       { "type", Type },
-      { "pwd", Pwd },
-      { "cd", Cd }
+      { "pwd",  Pwd },
+      { "cd",   Cd }
     };
 
     // ----------------------------------------------------------------------------------------
@@ -166,78 +167,111 @@ namespace Program
         }
       }
     }
-    static string[] ParseInput_(string input)
-    {
-      ArgumentNullException.ThrowIfNull(input);
-      var regex = new Regex(@"'([^']*(?:''[^']*)*)'|(\S+)");
-      var matches = regex.Matches(input);
-      var arguments = matches.Select(match => match.Groups[1].Success ? match.Groups[1].Value : match.Groups[2].Value).ToArray();
-      return arguments.Select(word => word.Replace("''", "")).ToArray();
-    }
+
+    // ----------------------------------------------------------------------------------------
+    // Parse command line. Extract command and arguments.
     static bool ParseInput(string input, out string command, out List<string> arguments)
+    {
+      string pattern = @"(?:'((?:[^']|'')*)'|""((?:[^""]| "")*)"" | (\S +))";
+    var regex = new Regex(pattern);
+      arguments = new List<string>();
+
+      var matches = regex.Matches(input);
+      if (matches.Count == 0)
+      {
+        command = string.Empty;
+        return false;
+      }
+
+      command = matches[0].Groups[0].Value;
+      for (int i = 1; i < matches.Count; i++)
+      {
+        string arg = matches[i].Groups[1].Success ? matches[i].Groups[1].Value.Replace("''", "'") :
+                     matches[i].Groups[2].Success ? matches[i].Groups[2].Value.Replace("\"\"", "\"") :
+                     matches[i].Groups[3].Value;
+        arguments.Add(arg);
+      }
+
+      return true;
+    }
+
+    static bool _ParseInput(string input, out string command, out List<string> arguments)
     {
       string pattern = @"(\S+)";
       var regex = new Regex(pattern);
+      string single_pattern = @"'((?:[^']| '')*)'";
+      var single_regex = new Regex(single_pattern);
+      string double_pattern = @"""((?:[^""]|"""")*)""";
+      var double_regex = new Regex(double_pattern);
+
+
       Match command_result = regex.Match(input);
       command = command_result.Value;
       arguments = new List<string>();
 
-      if (command_result.Success)
+      if (!command_result.Success)
       {
-        var command_length = command_result.Length + command_result.Index;
-        var remaining = input.Remove(0, command_length).TrimStart();
+        return false;
+      }
 
-        while (!string.IsNullOrEmpty(remaining))
+      string remaining = string.Empty;
+
+      var command_length = command_result.Length + command_result.Index;
+      remaining = input.Remove(0, command_length).TrimStart();
+
+      while (!string.IsNullOrEmpty(remaining))
+      {
+        if (parse_as(remaining, '\''))
         {
-          if ((remaining[0] == '\'') && (remaining.AsSpan().Count('\'') > 1))
+          var argument = single_regex.Match(remaining);
+          if (argument.Success)
           {
-            string single_pattern = @"'((?:[^']| '')*)'";
-            var single_regex = new Regex(single_pattern);
-            var argument = single_regex.Match(remaining);
-            if (argument.Success)
-            {
-              arguments.Add(argument.Groups[1].Value.Replace("''", ""));
-              var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length).TrimStart();
-            }
-            else
-            {
-              break;
-            }
-          }
-          else if ((remaining[0] == '\"') && (remaining.AsSpan().Count('\"') > 1))
-          {
-            string single_pattern = @"""((?:[^""]|"""")*)""";
-            var single_regex = new Regex(single_pattern);
-            var argument = single_regex.Match(remaining);
-            if (argument.Success)
-            {
-              arguments.Add(argument.Groups[1].Value.Replace("\"\"", ""));
-              var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length).TrimStart();
-            }
-            else
-            {
-              break;
-            }
+            extract(argument, ref arguments, "\'");
           }
           else
           {
-            var argument = regex.Match(remaining);
-            if (argument.Success)
-            {
-              arguments.Add(argument.Value);
-              var argument_length = argument.Length + argument.Index;
-              remaining = remaining.Remove(0, argument_length).TrimStart();
-            }
-            else
-            {
-              break;
-            }
+            break;
+          }
+        }
+        else if (parse_as(remaining, '\"'))
+        {
+          var argument = double_regex.Match(remaining);
+          if (argument.Success)
+          {
+            extract(argument, ref arguments, "\"");
+          }
+          else
+          {
+            break;
+          }
+        }
+        else
+        {
+          var argument = regex.Match(remaining);
+          if (argument.Success)
+          {
+            extract(argument, ref arguments, "");
+          }
+          else
+          {
+            break;
           }
         }
       }
+
       return command_result.Success;
+
+      void extract(Match argument, ref List<string> _arguments, string remove)
+      {
+        _arguments.Add(argument.Groups[1].Value.Replace(remove, ""));
+        var argument_length = argument.Length + argument.Index;
+        remaining = remaining.Remove(0, argument_length).TrimStart();
+      }
+
+      bool parse_as(string content, char character)
+      {
+        return (remaining[0] == character) && (remaining.AsSpan().Count(character) > 1);
+      }
     }
   }
 }
