@@ -172,9 +172,9 @@ namespace Program
     // Parse command line. Extract command and arguments.
     static bool ParseInput(string input, out string command, out List<string> arguments)
     {
-      string pattern = @"(?:'((?:[^']|'')*)'|""((?:[^""]| "")*)"" | (\S +))";
-    var regex = new Regex(pattern);
-      arguments = new List<string>();
+      string pattern = @"\s*(?:'([^']*(?:''[^']*)*)'|""([^""\\]*(?:""[^""\\]*)*)""|(\S+))";
+      var regex = new Regex(pattern);
+      arguments = [];
 
       var matches = regex.Matches(input);
       if (matches.Count == 0)
@@ -193,85 +193,6 @@ namespace Program
       }
 
       return true;
-    }
-
-    static bool _ParseInput(string input, out string command, out List<string> arguments)
-    {
-      string pattern = @"(\S+)";
-      var regex = new Regex(pattern);
-      string single_pattern = @"'((?:[^']| '')*)'";
-      var single_regex = new Regex(single_pattern);
-      string double_pattern = @"""((?:[^""]|"""")*)""";
-      var double_regex = new Regex(double_pattern);
-
-
-      Match command_result = regex.Match(input);
-      command = command_result.Value;
-      arguments = new List<string>();
-
-      if (!command_result.Success)
-      {
-        return false;
-      }
-
-      string remaining = string.Empty;
-
-      var command_length = command_result.Length + command_result.Index;
-      remaining = input.Remove(0, command_length).TrimStart();
-
-      while (!string.IsNullOrEmpty(remaining))
-      {
-        if (parse_as(remaining, '\''))
-        {
-          var argument = single_regex.Match(remaining);
-          if (argument.Success)
-          {
-            extract(argument, ref arguments, "\'");
-          }
-          else
-          {
-            break;
-          }
-        }
-        else if (parse_as(remaining, '\"'))
-        {
-          var argument = double_regex.Match(remaining);
-          if (argument.Success)
-          {
-            extract(argument, ref arguments, "\"");
-          }
-          else
-          {
-            break;
-          }
-        }
-        else
-        {
-          var argument = regex.Match(remaining);
-          if (argument.Success)
-          {
-            extract(argument, ref arguments, "");
-          }
-          else
-          {
-            break;
-          }
-        }
-      }
-
-      return command_result.Success;
-
-      void extract(Match argument, ref List<string> _arguments, string remove)
-      {
-        _arguments.Add(argument.Groups[1].Value.Replace(remove, ""));
-        var argument_length = argument.Length + argument.Index;
-        remaining = remaining.Remove(0, argument_length).TrimStart();
-      }
-
-      bool parse_as(string content, char character)
-      {
-        return (remaining[0] == character) && (remaining.AsSpan().Count(character) > 1);
-      }
     }
   }
 }
