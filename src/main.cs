@@ -194,8 +194,7 @@ namespace Program
         }
         else if (matches[i].Groups[2].Success)
         {
-          arg = matches[i].Value.RemoveUnescapedQuotes();
-          arg = arg.Replace("\"\"", "").RemoveUnescapedQuotes().QouteReplace();
+          arg = matches[i].Value.Replace("\"\"", "").RemoveUnescapedQuotes().QouteReplace();
         }
         else
         {
@@ -219,7 +218,7 @@ namespace Program
 
     public static string RemoveUnescapedQuotes(this string that)
     {
-      return Regex.Replace(that, @"(?<!\\)\""", "");
+      return Regex.Replace(that, @"(?<!\\)\""", "").Trim();
     }
   }
 }
