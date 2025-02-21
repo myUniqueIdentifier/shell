@@ -183,12 +183,24 @@ namespace Program
         return false;
       }
 
-      command = matches[0].Groups[0].Value;
+      command = matches[0].Groups[0].Value.TrimStart();
+
       for (int i = 1; i < matches.Count; i++)
       {
-        string arg = matches[i].Groups[1].Success ? matches[i].Groups[1].Value.Replace("''", "") :
-                     matches[i].Groups[2].Success ? matches[i].Groups[2].Value.Replace("\"\"", "").Replace("\\\"", "\"\"").QouteReplace() :
-                     matches[i].Groups[3].Value.Replace("\\", "");
+        string arg = string.Empty;
+        if (matches[i].Groups[1].Success)
+        {
+          arg = matches[i].Groups[1].Value.Replace("''", "");
+        }
+        else if (matches[i].Groups[2].Success)
+        {
+          arg = matches[i].Value.RemoveUnescapedQuotes();
+          arg = arg.Replace("\"\"", "").Replace("\\\"", "\"").QouteReplace();
+        }
+        else
+        {
+          matches[i].Groups[3].Value.Replace("\\", "");
+        }
 
         arguments.Add(arg);
       }
@@ -203,6 +215,11 @@ namespace Program
     {
       const string pattern = @"\\([\\$])";
       return Regex.Replace(that, pattern, "$1");
+    }
+
+    public static string RemoveUnescapedQuotes(this string that)
+    {
+      return Regex.Replace(that, @"(?<!\\)\""", "");
     }
   }
 }
