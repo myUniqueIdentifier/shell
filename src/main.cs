@@ -212,7 +212,7 @@ namespace Program
   {
     public static string QouteReplace(this string that)
     {
-      const string pattern = @"\\([\\$])";
+      const string pattern = @"\\([\\$""])";
       return Regex.Replace(that, pattern, "$1");
     }
 
