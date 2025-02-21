@@ -195,7 +195,7 @@ namespace Program
         else if (matches[i].Groups[2].Success)
         {
           arg = matches[i].Value.RemoveUnescapedQuotes();
-          arg = arg.Replace("\"\"", "").Replace("\\\"", "\"").QouteReplace();
+          arg = arg.Replace("\"\"", "").RemoveUnescapedQuotes().QouteReplace();
         }
         else
         {
