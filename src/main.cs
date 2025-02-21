@@ -187,7 +187,7 @@ namespace Program
       for (int i = 1; i < matches.Count; i++)
       {
         string arg = matches[i].Groups[1].Success ? matches[i].Groups[1].Value.Replace("''", "") :
-                     matches[i].Groups[2].Success ? matches[i].Groups[2].Value.Replace("\"\"", "") :
+                     matches[i].Groups[2].Success ? matches[i].Groups[2].Value.Replace("\"\"", "").Replace("\\", "") :
                      matches[i].Groups[3].Value.Replace("\\", "");
 
         arguments.Add(arg);
