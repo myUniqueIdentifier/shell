@@ -172,7 +172,7 @@ namespace Program
     // Parse command line. Extract command and arguments.
     static bool ParseInput(string input, out string command, out List<string> arguments)
     {
-      string pattern = "\\s*(?:'([^']*(?:''[^']*)*)'|\"([^\"]*(?:\"\"[^\"]*)*)\"|(\\S+))";
+      string pattern = "\\s*(?:'((?:[^']|\\')*)'|\"((?:[^\"]|\\\")*)\"|(\\S+))";
       var regex = new Regex(pattern);
       arguments = [];
 
@@ -187,13 +187,22 @@ namespace Program
       for (int i = 1; i < matches.Count; i++)
       {
         string arg = matches[i].Groups[1].Success ? matches[i].Groups[1].Value.Replace("''", "") :
-                     matches[i].Groups[2].Success ? matches[i].Groups[2].Value.Replace("\"\"", "").Replace("\\\\", "\\") :
+                     matches[i].Groups[2].Success ? matches[i].Groups[2].Value.Replace("\"\"", "").Replace("\\\"", "\"").QouteReplace() :
                      matches[i].Groups[3].Value.Replace("\\", "");
 
         arguments.Add(arg);
       }
 
       return true;
+    }
+  }
+
+  static class Extender
+  {
+    public static string QouteReplace(this string that)
+    {
+      const string pattern = @"\\([\\$])";
+      return Regex.Replace(that, pattern, "$1");
     }
   }
 }
