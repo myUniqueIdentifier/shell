@@ -211,8 +211,10 @@ namespace Program
   {
     public static string QouteReplace(this string that)
     {
-      const string pattern = @"\\([\\$""])";
-      return Regex.Replace(that, pattern, "$1");
+      const string pattern1 = @"\\([\$""])";
+      var temp =  Regex.Replace(that, pattern1, "$1");
+      const string pattern2 = @"\\([\\])";
+      return Regex.Replace(temp, pattern2, "$1");
     }
 
     public static string RemoveUnescapedQuotes(this string that)
