@@ -203,7 +203,6 @@ namespace Program
 
         arguments.Add(arg);
       }
-
       return true;
     }
   }
