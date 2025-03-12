@@ -195,7 +195,7 @@ namespace Program
         }
         else if (matches[i].Groups[2].Success)
         {
-          arg = matches[i].Groups[1].Value.Replace("''", "");
+          arg = matches[i].Groups[1].Value.Replace("\\", "").Replace("''", "");
         }
         else
         {
