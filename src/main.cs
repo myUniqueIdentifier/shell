@@ -184,22 +184,22 @@ namespace Program
         return false;
       }
 
-      command = matches[0].Groups[0].Value.TrimStart();
+      command = matches[0].Groups[0].Value.TrimStart().QouteReplace();
 
       for (int i = 1; i < matches.Count; i++)
       {
         string arg = string.Empty;
-        if (matches[i].Groups[1].Success)
+        if (matches[i].Groups[0].Success)
         {
-          arg = matches[i].Groups[2].Value.Replace("\"\"", "").QouteReplace();
+          arg = matches[i].Groups[0].Value.Replace("\"\"", "").QouteReplace();
         }
-        else if (matches[i].Groups[2].Success)
+        else if (matches[i].Groups[1].Success)
         {
           arg = matches[i].Groups[1].Value.Replace("\\", "").Replace("''", "");
         }
         else
         {
-          matches[i].Groups[3].Value.Replace("\\", "");
+          matches[i].Groups[2].Value.Replace("\\", "");
         }
 
         arguments.Add(arg);
