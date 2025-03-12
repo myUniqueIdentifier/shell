@@ -172,7 +172,8 @@ namespace Program
     // Parse command line. Extract command and arguments.
     static bool ParseInput(string input, out string command, out List<string> arguments)
     {
-      string pattern = "\\s*(?:'((?:[^']|\\')*)'|\"((?:[^\"]|\\\")*)\"|(\\S+))";
+      //string pattern = "\\s*(?:'((?:[^']|\\')*)'|\"((?:[^\"]|\\\")*)\"|(\\S+))";
+      string @pattern = @"(?:'((?:[^']|'')*)'|""((?:[^""]|"""")*)""|(\S+))";
       var regex = new Regex(pattern);
       arguments = [];
 
@@ -190,11 +191,11 @@ namespace Program
         string arg = string.Empty;
         if (matches[i].Groups[1].Success)
         {
-          arg = matches[i].Groups[1].Value.Replace("''", "");
+          arg = matches[i].Groups[2].Value.Replace("\"\"", "").QouteReplace();
         }
         else if (matches[i].Groups[2].Success)
         {
-          arg = matches[i].Value[1..^1].Replace("\"\"", "").RemoveUnescapedQuotes().QouteReplace();
+          arg = matches[i].Groups[1].Value.Replace("''", "");
         }
         else
         {
