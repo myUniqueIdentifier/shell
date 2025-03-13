@@ -1,15 +1,15 @@
-(?:'([^']*)'|"([^"]*)"|(\S+))
-
-ene
+mike
+joe blow 
+I am here
 bene
-joe blow
-joe 'joe blow'
-joe blow
-tik tok tak 
-tik "tik tok" tak
 asfd        asfd
-dhgf "dhgf  dfgh"
-eytr 'yter yetr'
+
+joe 'joe blow'
+eytr 'yter       yetr'
 pieter 'gert''gert'
-"jan""jan" piet
-"1234" asdf
+
+tik "tik tok" tak
+dhgf "dhgf  dfgh"
+piet "jan""jan"
+
+test'hello'\\'script

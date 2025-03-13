@@ -2,8 +2,7 @@ using static System.Console;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
-using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace Program
 {
@@ -184,22 +183,22 @@ namespace Program
         return false;
       }
 
-      command = matches[0].Groups[0].Value.TrimStart().QouteReplace();
+      command = matches[0].Groups[0].Value.QouteReplace();
 
       for (int i = 1; i < matches.Count; i++)
       {
         string arg = string.Empty;
-        if (matches[i].Groups[0].Success)
+        if (matches[i].Groups[1].Success)
         {
-          arg = matches[i].Groups[0].Value.Replace("\"\"", "").QouteReplace();
+          arg = matches[i].Groups[1].Value.Replace("\"\"", "").QouteReplace();
         }
-        else if (matches[i].Groups[1].Success)
+        else if (matches[i].Groups[2].Success)
         {
-          arg = matches[i].Groups[1].Value.Replace(@"\\", @"\").Replace(@"''", "");
+          arg = matches[i].Groups[2].Value.Replace(@"\\", @"\").Replace(@"''", "");
         }
         else
         {
-          matches[i].Groups[2].Value.Replace("\\", "");
+          arg = matches[i].Groups[3].Value.Replace("\\", "");
         }
 
         arguments.Add(arg);
@@ -220,6 +219,17 @@ namespace Program
     public static string RemoveUnescapedQuotes(this string that)
     {
       return Regex.Replace(that, @"(?<!\\)\""", "").Trim();
+    }
+    public static string Coalesce(this Match that)
+    {
+      for (int i = 1; i < that.Groups.Count; i++)
+      {
+        if (that.Groups[i].Success)
+        {
+          return that.Groups[i].Value;
+        }
+      }
+      return string.Empty;
     }
   }
 }
