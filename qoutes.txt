@@ -8,8 +8,87 @@ joe 'joe blow'
 eytr 'yter       yetr'
 pieter 'gert''gert'
 
-tik "tik tok" tak
+tek "tik tok" tak
 dhgf "dhgf  dfgh"
 piet "jan""jan"
 
 test'hello'\\'script
+
+
+
+
+
+
+(?:'((?:[^']|'')*)'|"((?:[^"\\]|\\.)*)"|(\S+))
+(?:'((?:[^']|'')*)'|""((?:[^""]|"""")*)""|(\S+))
+
+tek "tik tok" tak
+test s"inside"word test
+echo "hello\"insidequotes"test\"
+
+I am trying to do the [CodeCrafters](https://codecrafters.io/) [Build your own Shell](https://app.codecrafters.io/courses/shell) challenge in C#. I am trying to keep my code small and was progressing well. However when I reached the Quoting section I got stuck at [Backslash within double quotes](https://app.codecrafters.io/courses/shell/stages/gu3).
+
+It seemed to me that a Regex solution would be the easiest most compact solution to this kind of problem but I am lost. I have multiple Regex's that are partial solutions but nothing that are a single working solution.
+
+Here is my three test cases I am trying to solve:
+1. tek "tik tok" tak
+2. test s"inside"word test
+3. echo "hello\"insidequotes"test\"
+
+Two reg exes that cover the examples:
+a. (?:'((?:[^']|'')*)'|"((?:[^"\\]|\\.)*)"|(\S+)) 
+b. (?:'((?:[^']|'')*)'|""((?:[^""]|"""")*)""|(\S+)) 
+
+My results in [Rubular](https://rubular.com/):
+Regex A parses examples 1&2 correctly
+Regex B parses 2&3 correctly
+Regex A works in Rubular but is not valid as C# string in the format: @"(?:'((?:[^']|'')*)'|"((?:[^"\\]|\\.)*)"|(\S+))"
+
+So how to fix this so that a single regex can parse everything?
+
+A mvc that shows the problem in action:
+
+https://dotnetfiddle.net/MbVVKQ
+
+```
+using System;
+using System.Text.RegularExpressions;
+
+class Program
+{
+  static void Main()
+  {
+    string[] patterns = {
+    // @"(?:'((?:[^']|'')*)'|"((?:[^"\\]|\\.)*)"|(\S+))"
+      @"(?:'((?:[^']|'')*)'|""((?:[^""]|"""")*)""|(\S+))"
+    };
+    string[] testCases = {
+      @"tek ""tik tok"" tak",
+      @"test s""inside""word test",
+      @"echo ""hello\""insidequotes""test\"""
+    };
+
+    foreach (var pattern in patterns)
+    {
+      Console.WriteLine($"Pattern: {pattern}");
+      foreach (var input in testCases)
+      {				
+        Console.WriteLine($"Input: {input}");
+        MatchCollection matches = Regex.Matches(input, pattern);
+        Console.WriteLine("Matches:");
+        foreach (Match match in matches)
+        {
+          if (match.Groups[1].Success)
+            Console.WriteLine($"- {match.Groups[1].Value}"); // Enkel
+          else if (match.Groups[2].Success)
+            Console.WriteLine($"- {match.Groups[2].Value}"); // Dubbel
+          else
+            Console.WriteLine($"- {match.Groups[3].Value}"); // woord
+        }
+        Console.WriteLine();
+      }
+    }
+  }
+}
+'''
+

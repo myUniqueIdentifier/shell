@@ -35,10 +35,14 @@ namespace Program
         }
         else
         {
-          if (!ParseInput(line, out string command, out List<string> arguments))
+          var commandline = ParseInput (line);
+          if (commandline.Count == 0)
           {
             continue;
           }
+
+          var command = commandline[0];
+          var arguments = commandline.Skip(1).ToList();
 
           if (commands.ContainsKey(command)) // internal commands
           {
@@ -169,67 +173,71 @@ namespace Program
 
     // ----------------------------------------------------------------------------------------
     // Parse command line. Extract command and arguments.
-    static bool ParseInput(string input, out string command, out List<string> arguments)
+    static List<string> ParseInput(string input)
     {
-      //string pattern = "\\s*(?:'((?:[^']|\\')*)'|\"((?:[^\"]|\\\")*)\"|(\\S+))";
-      string @pattern = @"(?:'((?:[^']|'')*)'|""((?:[^""]|"""")*)""|(\S+))";
-      var regex = new Regex(pattern);
-      arguments = [];
+      var result = new List<string>();
+      bool inDoubleQuotes = false;
+      bool inSingleQuotes = false;
+      var currentWord = new List<char>();
 
-      var matches = regex.Matches(input);
-      if (matches.Count == 0)
+      for (int i = 0; i < input.Length; i++)
       {
-        command = string.Empty;
-        return false;
-      }
+        char c = input[i];
 
-      command = matches[0].Groups[0].Value.QouteReplace();
-
-      for (int i = 1; i < matches.Count; i++)
-      {
-        string arg = string.Empty;
-        if (matches[i].Groups[2].Success)
+        if (c == '\\' && i + 1 < input.Length)
         {
-          arg = matches[i].Groups[2].Value.Replace("\"\"", "").QouteReplace();
+          char nextChar = input[i + 1];
+          if (inDoubleQuotes && (nextChar == '\\' || nextChar == '$' || nextChar == '"'))
+          {
+            currentWord.Add(nextChar); // Preserve escaped \ or $ or " inside double quotes
+            i++; // Skip the escaped character
+          }
+          else if (!inDoubleQuotes)
+          {
+            currentWord.Add(nextChar); // Preserve next character as is
+            i++; // Skip the escaped character
+          }
+          else
+          {
+            currentWord.Add(c); // Add backslash as is if not followed by escape-worthy character
+          }
         }
-        else if (matches[i].Groups[1].Success)
+        else if (c == '"')
         {
-          arg = matches[i].Groups[1].Value.Replace(@"\\", @"\").Replace(@"''", "");
+          if (inDoubleQuotes && i + 1 < input.Length && input[i + 1] == '"')
+          {
+            currentWord.Add('"'); // Convert double " inside to a single "
+            i++; // Skip the extra quote
+          }
+          else
+          {
+            inDoubleQuotes = !inDoubleQuotes;
+          }
+        }
+        else if (c == '\'' && !inDoubleQuotes)
+        {
+          inSingleQuotes = !inSingleQuotes;
+        }
+        else if (c == ' ' && !inDoubleQuotes && !inSingleQuotes)
+        {
+          if (currentWord.Count > 0)
+          {
+            result.Add(new string(currentWord.ToArray()));
+            currentWord.Clear();
+          }
         }
         else
         {
-          arg = matches[i].Groups[3].Value.Replace("\\", "");
+          currentWord.Add(c);
         }
-
-        arguments.Add(arg);
       }
-      return true;
-    }
-  }
 
-  static class Extender
-  {
-    public static string QouteReplace(this string that)
-    {
-      const string pattern1 = @"\\([\$""\\])";
-      var temp =  Regex.Replace(that, pattern1, "$1");
-      return temp;
-    }
-
-    public static string RemoveUnescapedQuotes(this string that)
-    {
-      return Regex.Replace(that, @"(?<!\\)\""", "").Trim();
-    }
-    public static string Coalesce(this Match that)
-    {
-      for (int i = 1; i < that.Groups.Count; i++)
+      if (currentWord.Count > 0)
       {
-        if (that.Groups[i].Success)
-        {
-          return that.Groups[i].Value;
-        }
+        result.Add(new string(currentWord.ToArray()));
       }
-      return string.Empty;
+
+      return result;
     }
   }
 }
