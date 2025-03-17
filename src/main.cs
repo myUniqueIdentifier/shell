@@ -190,12 +190,12 @@ namespace Program
           if (inDoubleQuotes && (nextChar == '\\' || nextChar == '$' || nextChar == '"'))
           {
             currentWord.Add(nextChar); // Preserve escaped \ or $ or " inside double quotes
-            i++; // Skip the escaped character
+            i++;
           }
           else if (!inDoubleQuotes)
           {
             currentWord.Add(nextChar); // Preserve next character as is
-            i++; // Skip the escaped character
+            i++;
           }
           else
           {
@@ -207,7 +207,7 @@ namespace Program
           if (inDoubleQuotes && i + 1 < input.Length && input[i + 1] == '"')
           {
             currentWord.Add('"'); // Convert double " inside to a single "
-            i++; // Skip the extra quote
+            i++;
           }
           else
           {
