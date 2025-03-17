@@ -57,6 +57,7 @@ namespace Program
               Arguments = string.Join(" ", arguments.Select(s => s.Contains(' ') ? $"\"{s}\"" : s))
             };
             Process.Start(startInfo)?.WaitForExit();
+            WriteLine("");
           }
           else
           {
@@ -190,24 +191,24 @@ namespace Program
           if (inDoubleQuotes && (nextChar == '\\' || nextChar == '$' || nextChar == '"'))
           {
             currentWord.Add(nextChar); // Preserve escaped \ or $ or " inside double quotes
-            i++;
+            i++; // Skip the escaped character
           }
-          else if (!inDoubleQuotes)
+          else if (!inDoubleQuotes && !inSingleQuotes)
           {
             currentWord.Add(nextChar); // Preserve next character as is
-            i++;
+            i++; // Skip the escaped character
           }
           else
           {
             currentWord.Add(c); // Add backslash as is if not followed by escape-worthy character
           }
         }
-        else if (c == '"')
+        else if (c == '"' && !inSingleQuotes)
         {
           if (inDoubleQuotes && i + 1 < input.Length && input[i + 1] == '"')
           {
             currentWord.Add('"'); // Convert double " inside to a single "
-            i++;
+            i++; // Skip the extra quote
           }
           else
           {
@@ -228,7 +229,7 @@ namespace Program
         }
         else
         {
-          currentWord.Add(c);
+          currentWord.Add(c); // Preserve all characters inside single quotes
         }
       }
 
