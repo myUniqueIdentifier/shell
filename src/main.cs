@@ -54,8 +54,9 @@ namespace Program
             var startInfo = new ProcessStartInfo
             {
               FileName = command,
-              Arguments = string.Join(" ", arguments)
+              Arguments = string.Join(" ", arguments.Select(arg => "'" + arg + "'"))
             };
+            WriteLine($"DEBUG: {startInfo.FileName} {startInfo.Arguments}");
             Process.Start(startInfo)?.WaitForExit();
             WriteLine("");
           }
@@ -191,12 +192,12 @@ namespace Program
           if (inDoubleQuotes && (nextChar == '\\' || nextChar == '$' || nextChar == '"'))
           {
             currentWord.Add(nextChar); // Preserve escaped \ or $ or " inside double quotes
-            i++; // Skip the escaped character
+            i++;
           }
           else if (!inDoubleQuotes && !inSingleQuotes)
           {
             currentWord.Add(nextChar); // Preserve next character as is
-            i++; // Skip the escaped character
+            i++;
           }
           else
           {
@@ -208,7 +209,7 @@ namespace Program
           if (inDoubleQuotes && i + 1 < input.Length && input[i + 1] == '"')
           {
             currentWord.Add('"'); // Convert double " inside to a single "
-            i++; // Skip the extra quote
+            i++;
           }
           else
           {
@@ -229,13 +230,15 @@ namespace Program
         }
         else
         {
-          currentWord.Add(c); // Preserve all characters inside single quotes
+          currentWord.Add(c);
         }
       }
 
       if (currentWord.Count > 0)
       {
-        result.Add(new string(currentWord.ToArray()));
+        string word = new string(currentWord.ToArray());
+
+        result.Add(word);
       }
 
       return result;
