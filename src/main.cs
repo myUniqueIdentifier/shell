@@ -56,7 +56,7 @@ namespace Program
               FileName = command,
               Arguments = string.Join(" ", arguments.Select(arg => "'" + arg + "'"))
             };
-            WriteLine($"DEBUG: {startInfo.FileName} {startInfo.Arguments}");
+            //WriteLine($"DEBUG: {startInfo.FileName} {startInfo.Arguments}");
             Process.Start(startInfo)?.WaitForExit();
             WriteLine("");
           }
