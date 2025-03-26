@@ -54,7 +54,7 @@ namespace Program
             var startInfo = new ProcessStartInfo
             {
               FileName = command,
-              Arguments = string.Join(" ", arguments.Select(arg => "'" + arg + "'"))
+              Arguments = string.Join(" ", arguments.Select(arg => "\"" + arg + "\""))
             };
             //WriteLine($"DEBUG: {startInfo.FileName} {startInfo.Arguments}");
             Process.Start(startInfo)?.WaitForExit();
